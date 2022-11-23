@@ -10,14 +10,14 @@ WORKDIR CCF
 RUN git submodule update --recursive --init
 
 RUN apt update \
-    && apt install -y ansible software-properties-common bsdmainutils dnsutils \
+    && apt install -y ansible cmake software-properties-common bsdmainutils dnsutils \
     && ansible-playbook getting_started/setup_vm/oe-app-dev.yml \
     && apt remove -y ansible software-properties-common \
     && apt -y autoremove \
     && apt -y clean
 
 RUN mkdir build && cd build && \
-    cmake -GNinja -DCOMPILE_TARGET=sgx -DCMAKE_INSTALL_PREFIX=$(GLOBAL_INSTALL_PREFIX)_sgx -DVERBOSE_LOGGING=OFF -DUNSAFE_VERSION=OFF  .. && \
+    cmake -GNinja -DCOMPILE_TARGET=sgx -DCMAKE_INSTALL_PREFIX=/opt/ccf_sgx -DVERBOSE_LOGGING=OFF -DUNSAFE_VERSION=OFF  .. && \
     ninja && \
     ninja install && \
     cpack && \
