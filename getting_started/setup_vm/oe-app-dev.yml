@@ -8,6 +8,9 @@
         tasks_from: base_image_install.yml
       when: platform == "sgx"
     - import_role:
+        name: perf-tool
+        task: install.yml
+    - import_role:
         name: ccf_build
         tasks_from: install.yml
     - import_role:
