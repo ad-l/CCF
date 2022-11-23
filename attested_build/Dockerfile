@@ -10,7 +10,8 @@ WORKDIR CCF
 RUN git submodule update --recursive --init
 
 RUN apt update \
-    && apt install -y ansible cmake software-properties-common bsdmainutils dnsutils \
+    && apt install -y ansible software-properties-common bsdmainutils dnsutils \
+    && apt satisfy "cmake (>= 3.16)" \
     && ansible-playbook getting_started/setup_vm/oe-app-dev.yml \
     && apt remove -y ansible software-properties-common \
     && apt -y autoremove \
