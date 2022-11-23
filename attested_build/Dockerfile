@@ -12,7 +12,7 @@ RUN git submodule update --recursive --init
 RUN apt update \
     && apt install -y ansible software-properties-common bsdmainutils dnsutils \
     && apt satisfy -y "cmake (>= 3.16)" \
-    && ([ ! -f /usr/local/bin/cmake ] || echo okrm -f /usr/local/bin/cmake ) \
+    && ([ ! -f /usr/local/bin/cmake ] || rm -f /usr/local/bin/cmake ) \
     && ansible-playbook getting_started/setup_vm/oe-app-dev.yml \
     && apt remove -y ansible software-properties-common \
     && apt -y autoremove \
