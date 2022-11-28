@@ -1,4 +1,4 @@
-FROM antdl/oe:latest
+FROM openenclave:latest
 
 LABEL maintainer="antdl@microsoft.com"
 LABEL description="Attested build image and Debian package release for CCF"
