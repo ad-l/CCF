@@ -1,13 +1,12 @@
-FROM openenclave:latest
+FROM kapilvaswani/oe:latest as build-image
 
 LABEL maintainer="antdl@microsoft.com"
 LABEL description="Attested build image and Debian package release for CCF"
 
 ENV DEBIAN_FRONTEND noninteractive
 
-RUN git clone https://github.com/ad-l/CCF
-WORKDIR CCF
-RUN git submodule update --recursive --init
+COPY . /root/CCF
+WORKDIR /root/CCF
 
 RUN apt update \
     && apt install -y ansible software-properties-common bsdmainutils dnsutils \
@@ -25,3 +24,20 @@ RUN mkdir build && cd build && \
     cpack && \
     find . -name *.deb -type f -exec sha256sum {} \;
 
+FROM kapilvaswani/oe:latest 
+
+COPY . /root/CCF
+WORKDIR /root/CCF
+
+RUN apt update \
+    && apt install -y ansible software-properties-common bsdmainutils dnsutils \
+    && apt satisfy -y "cmake (>= 3.16)" \
+    && ([ ! -f /usr/local/bin/cmake ] || rm -f /usr/local/bin/cmake ) \
+    && ansible-playbook getting_started/setup_vm/oe-app-dev.yml \
+    && apt remove -y ansible software-properties-common \
+    && apt -y autoremove \
+    && apt -y clean
+
+COPY --from=build-image /root/CCF/build/ccf_sgx-4.0.0-Linux.tar.gz /
+WORKDIR /
+RUN tar zxvf ccf_sgx-4.0.0-Linux.tar.gz --strip-components=1
